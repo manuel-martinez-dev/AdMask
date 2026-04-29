@@ -1,0 +1,14 @@
+# Local-only tooling — not part of the extension
+domainRunner/
+extraDocs/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Local config overrides (e.g. real LLM_WEBHOOK_URL)
+config.local.js
