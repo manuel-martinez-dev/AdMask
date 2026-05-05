@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdMask</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 340px;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #111;
+    border-bottom: 1px solid #333;
+  }
+  header .title {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    color: #fff;
+  }
+  header .version { font-size: 11px; color: #666; }
+
+  #summary {
+    padding: 10px 14px 6px;
+    display: flex;
+    gap: 14px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .stat .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .stat .lbl {
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .stat.css  .num { color: #5b9cf6; }
+  .stat.tracker .num { color: #e05c5c; }
+  .stat.snippet .num { color: #6fcf8c; }
+
+  #hostname {
+    padding: 0 14px 8px;
+    font-size: 11px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #hits-list {
+    max-height: 240px;
+    overflow-y: auto;
+    border-top: 1px solid #2a2a2a;
+  }
+  .hit-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 14px;
+    border-bottom: 1px solid #222;
+    font-size: 11px;
+  }
+  .hit-row:last-child { border-bottom: none; }
+  .badge {
+    flex-shrink: 0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+  .badge.css      { background: #1e3a6e; color: #5b9cf6; }
+  .badge.tracker  { background: #4a1c1c; color: #e05c5c; }
+  .badge.snippet  { background: #1a3a26; color: #6fcf8c; }
+  .hit-selector {
+    flex: 1;
+    word-break: break-all;
+    color: #ccc;
+    line-height: 1.4;
+  }
+  .network {
+    flex-shrink: 0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #aaa;
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    margin-top: 1px;
+    white-space: nowrap;
+  }
+
+  #empty {
+    padding: 20px 14px;
+    text-align: center;
+    color: #555;
+    font-size: 12px;
+  }
+
+  footer {
+    padding: 8px 14px;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    gap: 8px;
+  }
+  button {
+    flex: 1;
+    padding: 6px 0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background: #2a2a2a;
+    color: #ccc;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  button:hover { background: #383838; }
+  button#download-btn {
+    background: #1e3a6e;
+    border-color: #2a5299;
+    color: #a8c8ff;
+  }
+  button#download-btn:hover { background: #254d8c; }
+  button:disabled { opacity: 0.4; cursor: default; }
+</style>
+</head>
+<body>
+<header>
+  <span class="title">AdMask</span>
+  <span class="version"></span>
+</header>
+
+<div id="summary">
+  <div class="stat css">
+    <span class="num" id="cnt-css">0</span>
+    <span class="lbl">CSS</span>
+  </div>
+  <div class="stat tracker">
+    <span class="num" id="cnt-tracker">0</span>
+    <span class="lbl">Tracker</span>
+  </div>
+  <div class="stat snippet">
+    <span class="num" id="cnt-snippet">0</span>
+    <span class="lbl">Snippet</span>
+  </div>
+</div>
+
+<div id="hostname"></div>
+
+<div id="hits-list">
+  <div id="empty">No hits on this page yet.</div>
+</div>
+
+<footer>
+  <button id="download-btn" disabled>Download report</button>
+  <button id="clear-btn">Clear</button>
+</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>
