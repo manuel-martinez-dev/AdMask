@@ -14,11 +14,11 @@ No build step required.
 
 ## How it works
 
-The service worker (`background.js`) fetches EasyList and EasyPrivacy filter lists, parses them into CSS rules, snippet rules, and tracker domains, and writes per-hostname subsets to session storage on each navigation. Three content scripts consume that data:
+The service worker (`background.js`) fetches EasyList and EasyPrivacy filter lists, parses them into CSS rules, snippet rules, and tracker domains, preserves the last good cached data when refreshes partially fail, and writes per-hostname/subdomain subsets to session storage on each navigation. Three content scripts consume that data:
 
 | Script | Role |
 |---|---|
-| `tracker-guard.js` | Detects third-party trackers via EasyPrivacy; reports to popup, never blocks DOM |
+| `tracker-guard.js` | Detects third-party trackers via EasyPrivacy, including a post-load sweep; reports to popup, never blocks DOM |
 | `content.js` | CSS selector matching, snippet marker pickup, placeholder replacement |
 | `content-main.js` | ABP snippet rules that require page JS access (property interception, XPath, text matching) |
 
@@ -46,4 +46,4 @@ To add a domain, edit `BYPASS_HOSTNAMES` in `config.js`.
 
 - **ABP + AdMask timing race** — sites using postMessage-style ad verification can occasionally trigger "adblock detected" when both extensions run together. The popup's hit list (selector + phase) is the starting point for isolating the cause.
 - **Snippet rules run at document_idle** — `content-main.js` only affects scripts that execute after DOMContentLoaded. Synchronous `<head>` scripts are unaffected.
-- **tracker-guard uses DOM-level detection** — EasyPrivacy was designed for network blocking. Some domains in the list serve both tracking and legitimate CDN assets. If a site breaks, check the popup for tracker hits and compare against the allowlist in `tracker-guard.js`.
+- **tracker-guard uses DOM-level detection** — EasyPrivacy was designed for network blocking. Some domains in the list serve both tracking and legitimate CDN assets. If a site breaks, check the popup for tracker hits and compare against the allowlist in `tracker-guard.js`.   
