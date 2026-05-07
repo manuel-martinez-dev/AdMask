@@ -275,8 +275,7 @@ function scanSubtree(root) {
   for (const selector of rules) {
     try {
       if (root.matches(selector) && !restored.has(root)) {
-        handleMatch(root, selector);
-        return;
+        if (handleMatch(root, selector)) return;
       }
       const matches = root.querySelectorAll(selector);
       for (const el of matches) {
@@ -329,20 +328,22 @@ function elementHasAdSignal(el) {
 }
 
 function handleMatch(el, selector) {
-  if (restoredSelectors.has(selector)) return;
+  if (restoredSelectors.has(selector)) return false;
   // skip layout containers — global rules like ##.w-full match Tailwind wrappers, not ad slots
   const rect = el.getBoundingClientRect();
   if (rect.width  > window.innerWidth  * LAYOUT_CONTAINER_VIEWPORT_RATIO &&
-      rect.height > window.innerHeight * LAYOUT_CONTAINER_VIEWPORT_RATIO) return;
+      rect.height > window.innerHeight * LAYOUT_CONTAINER_VIEWPORT_RATIO) return false;
 
   // vendor names in camelCase (e.g. FreeStarVideoAdContainer) don't match \b word boundaries in AD_SMELL_RE
   const selHasSmell = AD_SMELL_RE.test(selector) ||
                       NETWORK_PATTERNS.some(([re]) => re.test(selector));
-  if (!selHasSmell && !elementHasAdSignal(el)) return;
+  if (!selHasSmell && !elementHasAdSignal(el)) return false;
 
   const network = extractAdNetwork(el, selector);
   console.debug("[AdMask] Ad detected:", selector, el);
-  if (replaceWithPlaceholder({ el, selector, source: "css" })) reportHit(selector, "css", null, null, network);
+  const masked = replaceWithPlaceholder({ el, selector, source: "css" });
+  if (masked) reportHit(selector, "css", null, null, network);
+  return masked;
 }
 
 function handleSnippetMatch(el) {

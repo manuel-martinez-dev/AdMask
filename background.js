@@ -176,6 +176,7 @@ async function parseFilterListText(text, selectors, snippets, domains) {
     if (hashHash === -1) continue;
     const hostPart = trimmed.slice(0, hashHash).trim();
     const selector = trimmed.slice(hashHash + 2).trim();
+    if (selector.startsWith("+js(") || selector.startsWith("+css(")) continue;
     const hosts = hostPart ? hostPart.split(",").map(h => h.trim()) : ["*"];
     for (const host of hosts) {
       if (host.startsWith("~")) continue;
