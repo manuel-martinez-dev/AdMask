@@ -181,6 +181,7 @@ const NETWORK_PATTERNS = [
   [/adsbyadop/i,                                         "Adop"],
   [/adstub/i,                                            "AdStub"],
   [/\[status=["']?success/i,                             "Ad-Shield"],
+  [/html-load\.com|css-load\.com|content-loader\.com/i, "Ad-Shield"],
 ];
 
 const NETWORK_HOSTNAMES = [
@@ -362,8 +363,19 @@ function startObserver() {
     try {
       for (const m of mutations) {
         if (m.type === "childList") {
-          for (const node of m.addedNodes)
-            if (node.nodeType === 1) pending.push(node);
+          for (const node of m.addedNodes) {
+            if (node.nodeType === 1) {
+              if (node.tagName === "IFRAME" && !restored.has(node)) {
+                const src = node.getAttribute("src") || "";
+                const adShieldSel = /html-load\.com/i.test(src) ? 'iframe[src*="html-load.com"]'
+                                  : /css-load\.com/i.test(src)  ? 'iframe[src*="css-load.com"]'
+                                  : /content-loader\.com/i.test(src) ? 'iframe[src*="content-loader.com"]'
+                                  : null;
+                if (adShieldSel) handleMatch(node, adShieldSel);
+              }
+              pending.push(node);
+            }
+          }
         } else if (m.type === "attributes") {
           const el = m.target;
           if (el.dataset.admaskSnippet && !restored.has(el))
@@ -415,7 +427,12 @@ function processPending() {
   }
 
   // [data-google-query-id] is set exclusively by Google Publisher Tag on GPT ad slots
-  const VENDOR_RULES = ["[data-google-query-id]", 'iframe[status="success"]', "[bid]"];
+  const VENDOR_RULES = [
+    "[data-google-query-id]", 'iframe[status="success"]', "[bid]",
+    'iframe[src*="html-load.com"]',
+    'iframe[src*="css-load.com"]',
+    'iframe[src*="content-loader.com"]',
+  ];
   rules = [...cssRules, ...VENDOR_RULES];
 
   startObserver();
